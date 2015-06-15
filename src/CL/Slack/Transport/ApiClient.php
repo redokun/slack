@@ -14,8 +14,10 @@ namespace CL\Slack\Transport;
 use CL\Slack\Exception\SlackException;
 use CL\Slack\Payload\PayloadInterface;
 use CL\Slack\Payload\PayloadResponseInterface;
+use CL\Slack\Serializer\PayloadResponseSerializerInterface;
 use CL\Slack\Serializer\PayloadSerializer;
 use CL\Slack\Serializer\PayloadResponseSerializer;
+use CL\Slack\Serializer\PayloadSerializerInterface;
 use CL\Slack\Transport\Events\ResponseEvent;
 use CL\Slack\Transport\Events\RequestEvent;
 use GuzzleHttp\Client;
@@ -77,15 +79,19 @@ class ApiClient implements ApiClientInterface
      * @param string|null                   $token
      * @param ClientInterface|null          $client
      * @param EventDispatcherInterface|null $eventDispatcher
+     * @param PayloadSerializerInterface|null $payloadSerializer
+     * @param PayloadResponseSerializerInterface|null $payloadResponseSerializer
      */
     public function __construct(
         $token = null,
         ClientInterface $client = null,
-        EventDispatcherInterface $eventDispatcher = null
+        EventDispatcherInterface $eventDispatcher = null,
+        PayloadSerializerInterface $payloadSerializer = null,
+        PayloadResponseSerializerInterface $payloadResponseSerializer = null
     ) {
         $this->token                     = $token;
-        $this->payloadSerializer         = new PayloadSerializer();
-        $this->payloadResponseSerializer = new PayloadResponseSerializer();
+        $this->payloadSerializer         = $payloadSerializer ?: new PayloadSerializer();
+        $this->payloadResponseSerializer = $payloadResponseSerializer ?: new PayloadResponseSerializer();
         $this->client                    = $client ?: new Client();
         $this->eventDispatcher           = $eventDispatcher ?: new EventDispatcher();
     }
@@ -130,6 +136,34 @@ class ApiClient implements ApiClientInterface
     public function addResponseListener($callable)
     {
         $this->eventDispatcher->addListener(self::EVENT_RESPONSE, $callable);
+    }
+
+    /**
+     * @return PayloadSerializer
+     */
+    public function getPayloadSerializer() {
+        return $this->payloadSerializer;
+    }
+
+    /**
+     * @param PayloadSerializer $payloadSerializer
+     */
+    public function setPayloadSerializer($payloadSerializer) {
+        $this->payloadSerializer = $payloadSerializer;
+    }
+
+    /**
+     * @return PayloadResponseSerializer
+     */
+    public function getPayloadResponseSerializer() {
+        return $this->payloadResponseSerializer;
+    }
+
+    /**
+     * @param PayloadResponseSerializer $payloadResponseSerializer
+     */
+    public function setPayloadResponseSerializer($payloadResponseSerializer) {
+        $this->payloadResponseSerializer = $payloadResponseSerializer;
     }
 
     /**

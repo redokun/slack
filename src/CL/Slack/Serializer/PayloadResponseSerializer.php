@@ -15,8 +15,9 @@ use CL\Slack\Payload\PayloadResponseInterface;
 
 /**
  * @author Cas Leentfaar <info@casleentfaar.com>
+ * @author Paolo Agostinetto <paul.ago@gmail.com>
  */
-class PayloadResponseSerializer extends AbstractSerializer
+class PayloadResponseSerializer extends AbstractSerializer implements PayloadResponseSerializerInterface
 {
     /**
      * @param array  $payloadResponse
